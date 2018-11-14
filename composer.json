@@ -1,0 +1,19 @@
+{
+  "name": "shuchkin/simplexls",
+  "description": "Parse and retrieve data from old format Excel XLS files. MS Excel 97 workbooks PHP reader.",
+  "keywords": ["php", "excel", "xls", "parser", "backend"],
+  "homepage": "https://github.com/shuchkin/simplexls",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Sergey Shuchkin (SMSPILOT)",
+      "email": "sergey.shuchkin@gmail.com",
+      "homepage": "http://www.shuchkin.ru/"
+    }
+  ],
+  "autoload": {
+    "classmap": [
+      "src/SimpleXLS.php"
+    ]
+  }
+}
