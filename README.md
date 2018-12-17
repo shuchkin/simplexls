@@ -1,8 +1,6 @@
 # SimpleXLS class 0.9.2
 
-Parse and retrieve data from old Excel XLS files. MS Excel 97 workbooks PHP reader. PHP BIFF reader.
-
-No addiditional extensions need (internal olereader)
+Parse and retrieve data from old Excel XLS files. MS Excel 97 workbooks PHP reader. PHP BIFF reader. No addiditional extensions need (internal olereader). XLS only, MS Excel 2003+ php reader [here](https://packagist.org/packages/shuchkin/simplexlsx)  
 
 **Sergey Shuchkin** <sergey.shuchkin@gmail.com> 2016-2018<br/>
 
