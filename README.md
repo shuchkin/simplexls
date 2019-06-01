@@ -1,4 +1,5 @@
 # SimpleXLS class 0.9.4
+[<img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.herokuapp.com%2Fshuchkin" />](https://www.patreon.com/shuchkin)
 
 Parse and retrieve data from old Excel XLS files. MS Excel 97 workbooks PHP reader. PHP BIFF reader. No addiditional extensions need (internal olereader). XLS only, MS Excel 2003+ php reader [here](https://github.com/shuchkin/simplexlsx)  
 
