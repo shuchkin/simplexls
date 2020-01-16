@@ -17,21 +17,8 @@ echo '</pre>';
 /**
  * A class for reading Microsoft Excel Spreadsheets.
  *
- * Originally developed by Vadim Tkachenko under the name PHPExcelReader.
- * (http://sourceforge.net/projects/phpexcelreader)
- * Based on the Java version by Andy Khan (http://www.andykhan.com).
- * Maintained by David Sanders.  Reads only Biff 7 and Biff 8 formats.
- *
- * SimpleXLS version 2016 build by sergey.shuchkin@gmail.com
- *
- * @category   Spreadsheet
- * @package    SimpleXLS
- * @author     Vadim Tkachenko <vt@phpapache.com>, Sergey Shuchkin <sergey.shuchkin@gmail.com>
- * @copyright  1997-2016 The PHP Group
- * @license    http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version    Release: 0.9.1
- * @link
- * @see        OLE, Spreadsheet_Excel_Writer, SimpleXLSX
+ * SimpleXLS version 2016-2020 packaged by Sergey Shuchkin <sergey.shuchkin@gmail.com> from
+ * Spreadsheet_Excel_Reader class developed by Vadim Tkachenko <vt@phpapache.com>
  */
 class SimpleXLS {
 	const BIFF8 = 0x600;
@@ -70,11 +57,6 @@ class SimpleXLS {
 	//const TYPE_UNKNOWN = 0xffff;
 	const TYPE_NINETEENFOUR = 0x22;
 	const TYPE_MERGEDCELLS = 0xE5;
-
-	const UTCOFFSETDAYS = 25569;
-	const UTCOFFSETDAYS1904 = 24107;
-	const MSINADAY = 86400;
-	//const MSINADAY = 24 * 60 * 60;
 
 	//const DEF_NUM_FORMAT = "%.2f";
 	const DEF_NUM_FORMAT = '%s';
@@ -436,11 +418,7 @@ class SimpleXLS {
 
 	public function _GetInt4d( $data, $pos ) {
 		$value = ord( $data[ $pos ] ) | ( ord( $data[ $pos + 1 ] ) << 8 ) | ( ord( $data[ $pos + 2 ] ) << 16 ) | ( ord( $data[ $pos + 3 ] ) << 24 );
-		if ( $value >= 4294967294 ) {
-			$value = - 2;
-		}
-
-		return $value;
+		return ($value > 0x7FFFFFFF) ? $value - 0x100000000 : $value;
 	}
 
 	// }}}
@@ -1144,29 +1122,19 @@ class SimpleXLS {
 	 * Dates in Excel are stored as number of seconds from an epoch.  On
 	 * Windows, the epoch is 30/12/1899 and on Mac it's 01/01/1904
 	 *
-	 * @access private
-	 *
-	 * @param integer $numValue The raw Excel value to convert
+	 * @param integer $timevalue The raw Excel value to convert
 	 *
 	 * @return array First element is the converted date, the second element is number a unix timestamp
 	 */
-	public function createDate( $numValue ) {
-		if ( $numValue > 1 ) {
-			$utcDays  = $numValue - ( $this->nineteenFour ? self::UTCOFFSETDAYS1904 : self::UTCOFFSETDAYS );
-			$utcValue = round( ( $utcDays + 1 ) * self::MSINADAY );
-			$string   = $this->datetimeFormat ? gmdate( $this->datetimeFormat, $utcValue ) : gmdate( $this->curFormat, $utcValue );
-			$raw      = $utcValue;
-		} else {
-			$raw   = $numValue;
-			$hours = floor( $numValue * 24 );
-			/** @noinspection SummerTimeUnsafeTimeManipulationInspection */
-			$mins   = floor( $numValue * 24 * 60 ) - $hours * 60;
-			$secs   = floor( $numValue * self::MSINADAY ) - $hours * 60 * 60 - $mins * 60;
-			$ts     = mktime( $hours, $mins, $secs );
-			$string = $this->datetimeFormat ? gmdate( $this->datetimeFormat, $ts ) : gmdate( $this->curFormat, $ts );
+	public function createDate( $timevalue ) {
+//		$offset = ($timeoffset===null)? date('Z') : $timeoffset * 3600;
+		if ($timevalue > 1) {
+			$timevalue -= ( $this->nineteenFour ? 24107 : 25569 );
 		}
+		$ts = round($timevalue * 24 * 3600);
+		$string = $this->datetimeFormat ? gmdate( $this->datetimeFormat, $ts ) : gmdate( $this->curFormat, $ts );
+		return array( $string, $ts );
 
-		return array( $string, $raw );
 	}
 
 	public function addcell( $row, $col, $string, $raw = '' ) {
