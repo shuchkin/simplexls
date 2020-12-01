@@ -1,9 +1,10 @@
-# SimpleXLS class 0.9.5
-[<img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.herokuapp.com%2Fshuchkin" />](https://www.patreon.com/shuchkin)
+# SimpleXLS class 0.9.6
+[<img src="https://img.shields.io/packagist/dt/shuchkin/simplexls" />](https://packagist.org/packages/shuchkin/simplexls)
 
-Parse and retrieve data from old Excel XLS files. MS Excel 97 workbooks PHP reader. PHP BIFF reader. No addiditional extensions need (internal olereader). XLS only, MS Excel 2003+ php reader [here](https://github.com/shuchkin/simplexlsx)  
+Parse and retrieve data from old Excel .XLS files. MS Excel 97-2003 workbooks PHP reader. PHP BIFF reader. No addiditional extensions need (internal olereader).
+<br/>Modern .XLSX php reader [here](https://github.com/shuchkin/simplexlsx).  
 
-**Sergey Shuchkin** <sergey.shuchkin@gmail.com> 2016-2020<br/>
+[**Sergey Shuchkin**](https://www.patreon.com/shuchkin) <sergey.shuchkin@gmail.com> 2016-2020<br/>
 
 ## Basic Usage
 ```php
@@ -40,11 +41,14 @@ Array
 ```
 composer require shuchkin/simplexls
 ```
+or download class [here](https://github.com/shuchkin/simplexls/blob/master/src/SimpleXLS.php)
 
 ### Debug
 ```php
 ini_set('error_reporting', E_ALL );
 ini_set('display_errors', 1 );
+
+//header('Content-Type: text/html; charset=utf-8');
 
 $xls = SimpleXLSX::parse('books.xlsx', false, true );
 print_r( $xls->rows() );
@@ -63,7 +67,8 @@ if ($xls->success()) {
 	
 ## History
 ```
-0.9.5 (2020-01-16) fixed negative number values and datetime values
+0.9.6 (2020-12-01) Fixed README
+0.9.5 (2020-01-16) Fixed negative number values and datetime values
 0.9.4 (2019-03-14) Added git Tag for prevent composer warning 
 0.9.3 (2019-02-19) Fixed datetime detection
 0.9.2 (2018-11-15) GitHub realese, composer
