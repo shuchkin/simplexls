@@ -4,7 +4,7 @@
 Parse and retrieve data from old Excel .XLS files. MS Excel 97-2003 workbooks PHP reader. PHP BIFF reader. No addiditional extensions need (internal olereader).
 <br/>Modern .XLSX php reader [here](https://github.com/shuchkin/simplexlsx).  
 
-[**Sergey Shuchkin**](https://www.patreon.com/shuchkin) <sergey.shuchkin@gmail.com> 2016-2020<br/>
+[**Sergey Shuchkin**](https://www.patreon.com/shuchkin) <sergey.shuchkin@gmail.com> 2016-2021<br/>
 
 ## Basic Usage
 ```php
