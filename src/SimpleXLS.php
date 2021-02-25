@@ -164,65 +164,47 @@ class SimpleXLS {
 		0x2c => '$%1.2f',   //"$#,##0.00;($#,##0.00)",
 		0x30 => '%1.0f'
 	);
-	private $datetimeFormat = 'Y-m-d H:i:s';
+	protected $datetimeFormat = 'Y-m-d H:i:s';
 	/**
 	 * Default encoding
 	 *
 	 * @var string
 	 * @access private
 	 */
-	private $defaultEncoding = 'UTF-8';
+	protected $defaultEncoding = 'UTF-8';
 	/**
 	 * Default number format
 	 *
 	 * @var integer
 	 * @access private
 	 */
-	private $defaultFormat = self::DEF_NUM_FORMAT;
+	protected $defaultFormat = self::DEF_NUM_FORMAT;
 	/**
 	 * List of formats to use for each column
 	 *
 	 * @var array
 	 * @access private
 	 */
-	private $columnsFormat = array();
-	/**
-	 *
-	 * @var integer
-	 * @access private
-	 */
-	private $rowoffset = 1;   //"##0.0E0";
+	protected $columnsFormat = array();
 
-	// }}}
-	/**
-	 *
-	 * @var integer
-	 * @access private
-	 */
-	private $colOffset = 1;
-	private $recType;
-	private $nineteenFour;
-	private $multiplier;
-	private $sn;
-	private $curFormat;
+	protected $recType;
+	protected $nineteenFour;
+	protected $multiplier;
+	protected $sn;
+	protected $curFormat;
 
 	// OLERead
-	private $data;
-	private $numBigBlockDepotBlocks;
-	private $sbdStartBlock;
-	private $rootStartBlock;
-	private $extensionBlock;
-	private $numExtensionBlocks;
-	private $bigBlockChain;
-	private $smallBlockChain;
-	private $rootEntry;
-	private $entry;
-	private $props;
+	protected $data;
+    protected $bigBlockChain;
+	protected $smallBlockChain;
+	protected $rootEntry;
+	protected $entry;
+	protected $props;
 
 	// sergey.shuchkin@gmail.com
-	private $wrkbook; // false - to use excel format
-	private $error = false;
-	private $debug;
+	protected $wrkbook; // false - to use excel format
+	protected $error = false;
+	protected $debug;
 
 	// {{{ Spreadsheet_Excel_Reader()
 
@@ -237,6 +219,13 @@ class SimpleXLS {
 		$this->debug = $debug;
 		$this->_oleread( $filename, $isData );
 		$this->_parse();
+	}
+	public static function parseFile( $filename, $debug = false ) {
+		return self::parse( $filename, false, $debug );
+	}
+
+	public static function parseData( $data, $debug = false ) {
+		return self::parse( $data, true, $debug );
 	}
 	public static function parse( $filename, $isData = false, $debug = false ) {
 		$xlsx = new self( $filename, $isData, $debug );
@@ -287,7 +276,7 @@ class SimpleXLS {
 
 	// }}}
 
-	private function _oleread( $sFileName, $isData = false ) {
+	protected function _oleread( $sFileName, $isData = false ) {
 		if ( $isData ) {
 			$this->data = $sFileName;
 		} else {
@@ -311,11 +300,11 @@ class SimpleXLS {
 			return false;
 		}
 
-		$this->numBigBlockDepotBlocks = $this->_GetInt4d( $this->data, self::NUM_BIG_BLOCK_DEPOT_BLOCKS_POS );
-		$this->sbdStartBlock          = $this->_GetInt4d( $this->data, self::SMALL_BLOCK_DEPOT_BLOCK_POS );
-		$this->rootStartBlock         = $this->_GetInt4d( $this->data, self::ROOT_START_BLOCK_POS );
-		$this->extensionBlock         = $this->_GetInt4d( $this->data, self::EXTENSION_BLOCK_POS );
-		$this->numExtensionBlocks     = $this->_GetInt4d( $this->data, self::NUM_EXTENSION_BLOCK_POS );
+		$numBigBlockDepotBlocks = $this->_GetInt4d( $this->data, self::NUM_BIG_BLOCK_DEPOT_BLOCKS_POS );
+		$sbdStartBlock = $this->_GetInt4d( $this->data, self::SMALL_BLOCK_DEPOT_BLOCK_POS );
+		$rootStartBlock = $this->_GetInt4d( $this->data, self::ROOT_START_BLOCK_POS );
+		$extensionBlock = $this->_GetInt4d( $this->data, self::EXTENSION_BLOCK_POS );
+		$numExtensionBlocks = $this->_GetInt4d( $this->data, self::NUM_EXTENSION_BLOCK_POS );
 
 /*
 			echo $this->numBigBlockDepotBlocks." ";
@@ -329,9 +318,9 @@ class SimpleXLS {
 		$bigBlockDepotBlocks = array();
 		$pos                 = self::BIG_BLOCK_DEPOT_BLOCKS_POS;
 		// echo "pos = $pos";
-		$bbdBlocks = $this->numBigBlockDepotBlocks;
+		$bbdBlocks = $numBigBlockDepotBlocks;
 
-		if ( $this->numExtensionBlocks !== 0 ) {
+		if ( $numExtensionBlocks !== 0 ) {
 			$bbdBlocks = ( self::BIG_BLOCK_SIZE - self::BIG_BLOCK_DEPOT_BLOCKS_POS ) / 4;
 		}
 
@@ -341,9 +330,9 @@ class SimpleXLS {
 		}
 
 
-		for ( $j = 0; $j < $this->numExtensionBlocks; $j ++ ) {
-			$pos          = ( $this->extensionBlock + 1 ) * self::BIG_BLOCK_SIZE;
-			$blocksToRead = min( $this->numBigBlockDepotBlocks - $bbdBlocks, self::BIG_BLOCK_SIZE / 4 - 1 );
+		for ($j = 0; $j < $numExtensionBlocks; $j ++ ) {
+			$pos          = ( $extensionBlock + 1 ) * self::BIG_BLOCK_SIZE;
+			$blocksToRead = min( $numBigBlockDepotBlocks - $bbdBlocks, self::BIG_BLOCK_SIZE / 4 - 1 );
 
 			for ( $i = $bbdBlocks; $i < $bbdBlocks + $blocksToRead; $i ++ ) {
 				$bigBlockDepotBlocks[ $i ] = $this->_GetInt4d( $this->data, $pos );
@@ -351,8 +340,8 @@ class SimpleXLS {
 			}
 
 			$bbdBlocks += $blocksToRead;
-			if ( $bbdBlocks < $this->numBigBlockDepotBlocks ) {
-				$this->extensionBlock = $this->_GetInt4d( $this->data, $pos );
+			if ( $bbdBlocks < $numBigBlockDepotBlocks) {
+				$extensionBlock = $this->_GetInt4d( $this->data, $pos );
 			}
 		}
 
@@ -363,7 +352,7 @@ class SimpleXLS {
 		$index               = 0;
 		$this->bigBlockChain = array();
 
-		for ( $i = 0; $i < $this->numBigBlockDepotBlocks; $i ++ ) {
+		for ($i = 0; $i < $numBigBlockDepotBlocks; $i ++ ) {
 			$pos = ( $bigBlockDepotBlocks[ $i ] + 1 ) * self::BIG_BLOCK_SIZE;
 			//echo "pos = $pos";
 			for ( $j = 0; $j < self::BIG_BLOCK_SIZE / 4; $j ++ ) {
@@ -378,7 +367,7 @@ class SimpleXLS {
 		// readSmallBlockDepot();
 
 		$index                 = 0;
-		$sbdBlock              = $this->sbdStartBlock;
+		$sbdBlock              = $sbdStartBlock;
 		$this->smallBlockChain = array();
 
 		while ( $sbdBlock !== - 2 ) {
@@ -396,7 +385,7 @@ class SimpleXLS {
 
 
 		// readData(rootStartBlock)
-		$block = $this->rootStartBlock;
+		$block = $rootStartBlock;
 
 		$this->entry = $this->_readData( $block );
 
@@ -416,7 +405,7 @@ class SimpleXLS {
 
 	// {{{ setOutputEncoding()
 
-	public function _GetInt4d( $data, $pos ) {
+	protected function _GetInt4d( $data, $pos ) {
 		$value = ord( $data[ $pos ] ) | ( ord( $data[ $pos + 1 ] ) << 8 ) | ( ord( $data[ $pos + 2 ] ) << 16 ) | ( ord( $data[ $pos + 3 ] ) << 24 );
 		return ($value > 0x7FFFFFFF) ? $value - 0x100000000 : $value;
 	}
@@ -425,7 +414,7 @@ class SimpleXLS {
 
 	// {{{ setRowColOffset()
 
-	public function _readData( $bl ) {
+	protected function _readData( $bl ) {
 		$block = $bl;
 
 		$data = '';
@@ -443,7 +432,7 @@ class SimpleXLS {
 	// }}}
 	// {{{ setDefaultFormat()
 
-	public function _readPropertySets() {
+	protected function _readPropertySets() {
 		$offset = 0;
 		//var_dump($this->entry);
 		while ( $offset < $this->_strlen( $this->entry ) ) {
@@ -490,7 +479,7 @@ class SimpleXLS {
 	// }}}
 	// {{{ setColumnFormat()
 
-	private function _readWorkBook() {
+	protected function _readWorkBook() {
 		if ( $this->props[ $this->wrkbook ]['size'] < self::SMALL_BLOCK_THRESHOLD ) {
 //    	  getSmallBlockStream(PropertyStorage ps)
 
@@ -539,6 +528,14 @@ class SimpleXLS {
 
 
 	// }}}
+	protected function parseSubstreamHeader( $pos )
+    {
+		$length = ord( $this->data[ $pos + 2 ] ) | ord( $this->data[ $pos + 3 ] ) << 8;
+
+		$version       = ord( $this->data[ $pos + 4 ] ) | ord( $this->data[ $pos + 5 ] ) << 8;
+		$substreamType = ord( $this->data[ $pos + 6 ] ) | ord( $this->data[ $pos + 7 ] ) << 8;
+		return array( $length, $version, $substreamType );
+    }
 	// {{{ _parse()
 
 	/**
@@ -547,14 +544,11 @@ class SimpleXLS {
 	 * @access private
 	 * @return bool
 	 */
-	public function _parse() {
+	protected function _parse() {
 		$pos = 0;
 
 //        $code = ord($this->data[$pos]) | ord($this->data[$pos+1])<<8;
-		$length = ord( $this->data[ $pos + 2 ] ) | ord( $this->data[ $pos + 3 ] ) << 8;
-
-		$version       = ord( $this->data[ $pos + 4 ] ) | ord( $this->data[ $pos + 5 ] ) << 8;
-		$substreamType = ord( $this->data[ $pos + 6 ] ) | ord( $this->data[ $pos + 7 ] ) << 8;
+        list( $length, $version, $substreamType ) = $this->parseSubstreamHeader( $pos );
 //		echo "Start parse code=".base_convert($code,10,16)." version=".base_convert($version,10,16)." substreamType=".base_convert($substreamType,10,16).""."\n";
 
 //		die();
@@ -703,7 +697,6 @@ class SimpleXLS {
 
 				case self::TYPE_FILEPASS:
 					return false;
-					break;
 				case self::TYPE_NAME:
 					//echo "Type_NAME\n";
 					break;
@@ -723,7 +716,7 @@ class SimpleXLS {
 					}
 
 					$this->formatRecords[ $indexCode ] = $formatString;
-					// echo "Type.FORMAT\n";
+//					echo "Type.FORMAT[$indexCode]=$formatString\n";
 					break;
 				case self::TYPE_XF:
 					$formatstr = '';
@@ -749,7 +742,7 @@ class SimpleXLS {
 								$formatstr = $this->formatRecords[ $indexCode ];
 							}
 							//echo '.other.';
-//							echo "\ndate-time=$formatstr=\n";
+							//echo "\ndate-time=$formatstr=\n";
 							if ( $formatstr && preg_match( "/^[hmsday\/\-:\s]+$/i", $formatstr ) === 1 ) { // found day and time format
 								$isdate    = true;
 								$formatstr = str_replace( array( 'mm', 'h' ), array( 'i', 'H' ), $formatstr );
@@ -761,6 +754,7 @@ class SimpleXLS {
 							$this->formatRecords['xfrecords'][] = array(
 								'type'   => 'date',
 								'format' => $formatstr,
+								'code'   => $indexCode
 							);
 						} else {
 							$this->formatRecords['xfrecords'][] = array(
@@ -813,14 +807,14 @@ class SimpleXLS {
 
 		foreach ( $this->boundsheets as $key => $val ) {
 			$this->sn = $key;
-			$this->_parsesheet( $val['offset'] );
+			$this->_parseSheet( $val['offset'] );
 		}
 
 		return true;
 
 	}
 
-	public function _encodeUTF16( $string ) {
+	protected function _encodeUTF16( $string ) {
 		$result = $string;
 		if ( $this->defaultEncoding ) {
 			$result = mb_convert_encoding( $string, $this->defaultEncoding, 'UTF-16LE' );
@@ -829,26 +823,29 @@ class SimpleXLS {
 		return $result;
 	}
 
-	public function _parsesheet( $spos ) {
+	protected function _parseSheet($spos ) {
 		$cont = true;
 		// read BOF
 //		$code = ord($this->_data[$spos]) | ord($this->_data[$spos + 1]) << 8;
-		$length = ord( $this->data[ $spos + 2 ] ) | ord( $this->data[ $spos + 3 ] ) << 8;
-
-		$version       = ord( $this->data[ $spos + 4 ] ) | ord( $this->data[ $spos + 5 ] ) << 8;
-		$substreamType = ord( $this->data[ $spos + 6 ] ) | ord( $this->data[ $spos + 7 ] ) << 8;
+        list( $length, $version, $substreamType ) = $this->parseSubstreamHeader( $spos );
 
 		if ( ( $version !== self::BIFF8 ) && ( $version !== self::BIFF7 ) ) {
-			return - 1;
+			return false;
 		}
 
 		if ( $substreamType !== self::WORKSHEET ) {
-			return - 2;
+			return false;
 		}
 		//echo "Start parse code=".base_convert($code,10,16)." version=".base_convert($version,10,16)." substreamType=".base_convert($substreamType,10,16).""."\n";
 		$spos += $length + 4;
 		//var_dump($this->formatRecords);
 		//echo "code $code $length";
+
+        $this->sheets[ $this->sn ]['maxrow'] = 0;
+        $this->sheets[ $this->sn ]['maxcol'] = 0;
+        $this->sheets[ $this->sn ]['numRows'] = 0;
+        $this->sheets[ $this->sn ]['numCols'] = 0;
+
 		while ( $cont ) {
 			//echo "mem= ".memory_get_usage()."\n";
 //            $r = &$this->file->nextRecord();
@@ -859,8 +856,7 @@ class SimpleXLS {
 			$code                                = $lowcode | ord( $this->data[ $spos + 1 ] ) << 8;
 			$length                              = ord( $this->data[ $spos + 2 ] ) | ord( $this->data[ $spos + 3 ] ) << 8;
 			$spos                                += 4;
-			$this->sheets[ $this->sn ]['maxrow'] = $this->rowoffset - 1;
-			$this->sheets[ $this->sn ]['maxcol'] = $this->colOffset - 1;
+
 			//echo "Code=".base_convert($code,10,16)." $code\n";
 			unset( $this->recType );
 			$this->multiplier = 1; // need for format with %
@@ -913,7 +909,7 @@ class SimpleXLS {
 						$string = sprintf( $this->curFormat, $numValue * $this->multiplier );
 						//$this->addcell(RKRecord($r));
 					}
-					$this->addcell( $row, $column, $string, $raw );
+					$this->addCell( $row, $column, $string, $raw );
 					//echo "Type_RK $row $column $string $raw {$this->curformat}\n";
 					break;
 				case self::TYPE_LABELSST:
@@ -922,7 +918,7 @@ class SimpleXLS {
 //					$xfindex = ord($this->_data[$spos + 4]) | ord($this->_data[$spos + 5]) << 8;
 					$index = $this->_GetInt4d( $this->data, $spos + 6 );
 					//var_dump($this->sst);
-					$this->addcell( $row, $column, $this->sst[ $index ] );
+					$this->addCell( $row, $column, $this->sst[ $index ] );
 					//echo "LabelSST $row $column $string\n";
 					break;
 				case self::TYPE_MULRK:
@@ -944,7 +940,7 @@ class SimpleXLS {
 						}
 						//$rec['rknumbers'][$i]['xfindex'] = ord($rec['data'][$pos]) | ord($rec['data'][$pos+1]) << 8;
 						$tmppos += 6;
-						$this->addcell( $row, $colFirst + $i, $string, $raw );
+						$this->addCell( $row, $colFirst + $i, $string, $raw );
 						//echo "MULRK $row ".($colFirst + $i)." $string\n";
 					}
 					//MulRKRecord($r);
@@ -969,7 +965,7 @@ class SimpleXLS {
 
 						//   $this->addcell(NumberRecord($r));
 					}
-					$this->addcell( $row, $column, $string, $raw );
+					$this->addCell( $row, $column, $string, $raw );
 					//echo "Number $row $column $string\n";
 					break;
 				case self::TYPE_FORMULA:
@@ -1007,7 +1003,7 @@ class SimpleXLS {
 
 							//   $this->addcell(NumberRecord($r));
 						}
-						$this->addcell( $row, $column, $string, $raw );
+						$this->addCell( $row, $column, $string, $raw );
 						//echo "Number $row $column $string\n";
 					}
 					break;
@@ -1015,7 +1011,7 @@ class SimpleXLS {
 					$row    = ord( $this->data[ $spos ] ) | ord( $this->data[ $spos + 1 ] ) << 8;
 					$column = ord( $this->data[ $spos + 2 ] ) | ord( $this->data[ $spos + 3 ] ) << 8;
 					$string = ord( $this->data[ $spos + 6 ] );
-					$this->addcell( $row, $column, $string );
+					$this->addCell( $row, $column, $string );
 					//echo 'Type_BOOLERR '."\n";
 					break;
 				case self::TYPE_ROW:
@@ -1025,7 +1021,7 @@ class SimpleXLS {
 				case self::TYPE_LABEL:
 					$row    = ord( $this->data[ $spos ] ) | ord( $this->data[ $spos + 1 ] ) << 8;
 					$column = ord( $this->data[ $spos + 2 ] ) | ord( $this->data[ $spos + 3 ] ) << 8;
-					$this->addcell( $row, $column, $this->_substr( $this->data, $spos + 8, ord( $this->data[ $spos + 6 ] ) | ord( $this->data[ $spos + 7 ] ) << 8 ) );
+					$this->addCell( $row, $column, $this->_substr( $this->data, $spos + 8, ord( $this->data[ $spos + 6 ] ) | ord( $this->data[ $spos + 7 ] ) << 8 ) );
 
 					// $this->addcell(LabelRecord($r));
 					break;
@@ -1041,10 +1037,10 @@ class SimpleXLS {
 			$spos += $length;
 		}
 
-		if ( ! isset( $this->sheets[ $this->sn ]['numRows'] ) ) {
+		if ( $this->sheets[ $this->sn ]['numRows'] === 0 ) {
 			$this->sheets[ $this->sn ]['numRows'] = $this->sheets[ $this->sn ]['maxrow'];
 		}
-		if ( ! isset( $this->sheets[ $this->sn ]['numCols'] ) ) {
+		if ( $this->sheets[ $this->sn ]['numCols'] === 0 ) {
 			$this->sheets[ $this->sn ]['numCols'] = $this->sheets[ $this->sn ]['maxcol'];
 		}
 
@@ -1054,7 +1050,7 @@ class SimpleXLS {
 	//}}}
 	//{{{ createDate()
 
-	public function _GetIEEE754( $rknum ) {
+	protected function _GetIEEE754( $rknum ) {
 		if ( ( $rknum & 0x02 ) !== 0 ) {
 			$value = $rknum >> 2;
 		} else {
@@ -1090,7 +1086,7 @@ class SimpleXLS {
 		return $value;
 	}
 
-	public function isDate( $spos ) {
+	protected function isDate( $spos ) {
 		//$xfindex = GetInt2d(, 4);
 		$xfindex = ord( $this->data[ $spos + 4 ] ) | ord( $this->data[ $spos + 5 ] ) << 8;
 		//echo 'check is date '.$xfindex.' '.$this->formatRecords['xfrecords'][$xfindex]['type']."\n";
@@ -1137,21 +1133,21 @@ class SimpleXLS {
 
 	}
 
-	public function addcell( $row, $col, $string, $raw = '' ) {
+	protected function addCell( $row, $col, $string, $raw = '' ) {
 		//echo "ADD cel $row-$col $string\n";
-		$this->sheets[ $this->sn ]['maxrow']                                                      = max( $this->sheets[ $this->sn ]['maxrow'], $row + $this->rowoffset );
-		$this->sheets[ $this->sn ]['maxcol']                                                      = max( $this->sheets[ $this->sn ]['maxcol'], $col + $this->colOffset );
-		$this->sheets[ $this->sn ]['cells'][ $row + $this->rowoffset ][ $col + $this->colOffset ] = $string;
+		$this->sheets[ $this->sn ]['maxrow']                                                      = max( $this->sheets[ $this->sn ]['maxrow'], $row );
+		$this->sheets[ $this->sn ]['maxcol']                                                      = max( $this->sheets[ $this->sn ]['maxcol'], $col );
+		$this->sheets[ $this->sn ]['cells'][ $row ][ $col ] = $string;
 		if ( $raw ) {
-			$this->sheets[ $this->sn ]['cellsInfo'][ $row + $this->rowoffset ][ $col + $this->colOffset ]['raw'] = $raw;
+			$this->sheets[ $this->sn ]['cellsInfo'][ $row ][ $col ]['raw'] = $raw;
 		}
 		if ( isset( $this->recType ) ) {
-			$this->sheets[ $this->sn ]['cellsInfo'][ $row + $this->rowoffset ][ $col + $this->colOffset ]['type'] = $this->recType;
+			$this->sheets[ $this->sn ]['cellsInfo'][ $row ][ $col ]['type'] = $this->recType;
 		}
 
 	}
 
-	public function createNumber( $spos ) {
+	protected function createNumber( $spos ) {
 		$rknumhigh = $this->_GetInt4d( $this->data, $spos + 10 );
 		$rknumlow  = $this->_GetInt4d( $this->data, $spos + 6 );
 		//for ($i=0; $i<8; $i++) { echo ord($this->_data[$i+$spos+6]) . " "; } echo "<br>";
@@ -1184,10 +1180,6 @@ class SimpleXLS {
 		$this->defaultEncoding = $encoding;
 	}
 
-	public function setRowColOffset( $iOffset ) {
-		$this->rowoffset = $iOffset;
-		$this->colOffset = $iOffset;
-	}
 
 	/**
 	 * Set the default number format
@@ -1211,13 +1203,13 @@ class SimpleXLS {
 	public function setColumnFormat( $column, $sFormat ) {
 		$this->columnsFormat[ $column ] = $sFormat;
 	}
-	private function _strlen( $str ) {
+	protected function _strlen( $str ) {
 		return (ini_get('mbstring.func_overload') & 2) ? mb_strlen($str , '8bit') : strlen($str);
 	}
-	private function _strpos( $haystack, $needle, $offset = 0 ) {
+	protected function _strpos( $haystack, $needle, $offset = 0 ) {
 		return (ini_get('mbstring.func_overload') & 2) ? mb_strpos( $haystack, $needle, $offset , '8bit') : strpos($haystack, $needle, $offset);
 	}
-	private function _substr( $str, $start, $length = null ) {
+	protected function _substr( $str, $start, $length = null ) {
 		return (ini_get('mbstring.func_overload') & 2) ? mb_substr( $str, $start, ($length === null) ? mb_strlen($str,'8bit') : $length, '8bit') : substr($str, $start, ($length === null) ? strlen($str) : $length );
 	}
 }
