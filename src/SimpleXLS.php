@@ -260,7 +260,7 @@ class SimpleXLS {
 			for ( $i = 0; $i < $s['numRows']; $i ++ ) {
 				$r = array();
 				for ( $j = 0; $j < $s['numCols']; $j ++ ) {
-					$r[ $j ] = isset( $s['cells'][ $i + 1 ][ $j + 1 ] ) ? $s['cells'][ $i + 1 ][ $j + 1 ] : '';
+					$r[ $j ] = isset( $s['cells'][ $i ][ $j ] ) ? $s['cells'][ $i ][ $j ] : '';
 				}
 				$result[] = $r;
 			}
@@ -705,10 +705,11 @@ class SimpleXLS {
 
 					if ( $version === self::BIFF8 ) {
 						$numchars = ord( $this->data[ $pos + 6 ] ) | ord( $this->data[ $pos + 7 ] ) << 8;
-						if ( ord( $this->data[ $pos + 8 ] ) === 0 ) {
+						if ( ord( $this->data[ $pos + 8 ] ) === 0 ) { // ascii
 							$formatString = $this->_substr( $this->data, $pos + 9, $numchars );
 						} else {
 							$formatString = $this->_substr( $this->data, $pos + 9, $numchars * 2 );
+							$formatString = $this->_encodeUTF16( $formatString );
 						}
 					} else {
 						$numchars     = ord( $this->data[ $pos + 6 ] );
@@ -720,7 +721,6 @@ class SimpleXLS {
 					break;
 				case self::TYPE_XF:
 					$formatstr = '';
-					//global $dateFormats, $numberFormats;
 					$indexCode = ord( $this->data[ $pos + 6 ] ) | ord( $this->data[ $pos + 7 ] ) << 8;
 					//echo "\nType.XF ".count($this->formatRecords['xfrecords'])." $indexCode ";
 					if ( array_key_exists( $indexCode, $this->dateFormats ) ) {
@@ -739,14 +739,15 @@ class SimpleXLS {
 						$isdate = false;
 						if ( $indexCode > 0 ) {
 							if ( isset( $this->formatRecords[ $indexCode ] ) ) {
+//							    die( 'L:'.__LINE__ );
 								$formatstr = $this->formatRecords[ $indexCode ];
 							}
 							//echo '.other.';
-							//echo "\ndate-time=$formatstr=\n";
-							if ( $formatstr && preg_match( "/^[hmsday\/\-:\s]+$/i", $formatstr ) === 1 ) { // found day and time format
+//							echo "\nfl=".strlen( $formatstr)." fs=$formatstr=\n";
+
+							if ( $formatstr && preg_match( '/^[hmsday\/\-: ]+$/i', $formatstr ) ) { // found day and time format
 								$isdate    = true;
-								$formatstr = str_replace( array( 'mm', 'h' ), array( 'i', 'H' ), $formatstr );
-								//echo "\ndate-time $formatstr \n";
+								$formatstr = str_replace( array( 'yyyy',':mm','mm','dd', 'h','ss' ), array('Y',':i','m','d', 'H','s' ), $formatstr );
 							}
 						}
 
