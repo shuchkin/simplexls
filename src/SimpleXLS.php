@@ -270,6 +270,19 @@ class SimpleXLS {
 
 		return false;
 	}
+	public function toHTML( $worksheetIndex = 0 ) {
+		$s = '<table class=excel>';
+		foreach ( $this->rows( $worksheetIndex ) as $r ) {
+			$s .= '<tr>';
+			foreach ( $r as $c ) {
+				$s .= '<td nowrap>' . ( $c === '' ? '&nbsp' : htmlspecialchars( $c, ENT_QUOTES ) ) . '</td>';
+			}
+			$s .= "</tr>\r\n";
+		}
+		$s .= '</table>';
+
+		return $s;
+	}
 	public function setDateTimeFormat( $value ) {
 		$this->datetimeFormat = is_string( $value) ? $value : false;
 	}
