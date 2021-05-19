@@ -8,7 +8,7 @@ if ( $xls = SimpleXLS::parse('excel5book.xls')) {
 	print_r( $xls->rows() ); // dump first sheet
 	print_r( $xls->rows(1)); /// dump second sheet
 } else {
-	echo SimpleXLSX::parseError();
+	echo SimpleXLS::parseError();
 }
 
 echo '</pre>';
