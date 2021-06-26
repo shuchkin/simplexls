@@ -2,7 +2,9 @@
 [<img src="https://img.shields.io/packagist/dt/shuchkin/simplexls" />](https://packagist.org/packages/shuchkin/simplexls)
 
 Parse and retrieve data from old Excel .XLS files. MS Excel 97-2003 workbooks PHP reader. PHP BIFF reader. No additional extensions needed (internal olereader).
-<br/>Modern .XLSX php reader [here](https://github.com/shuchkin/simplexlsx).  
+<br/>Modern .XLSX php reader [here](https://github.com/shuchkin/simplexlsx).
+
+*Hey, bro, please ★ the package for my motivation :) and [donate](https://opencollective.com/simplexlsx) for more motivation!*
 
 [**Sergey Shuchkin**](https://www.patreon.com/shuchkin) <sergey.shuchkin@gmail.com> 2016-2021<br/>
 
