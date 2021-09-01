@@ -270,6 +270,17 @@ class SimpleXLS {
 
 		return false;
 	}
+	public function cRows($columns){
+		$rows = $this->rows();
+		array_shift($rows);
+
+		$values = array();
+		foreach ($rows as $key => $row) {
+			$values[$key] = array_combine(array_values($columns), array_values($row));
+		}
+
+		return $values;
+	}
 	public function toHTML( $worksheetIndex = 0 ) {
 		$s = '<table class=excel>';
 		foreach ( $this->rows( $worksheetIndex ) as $r ) {

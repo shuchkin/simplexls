@@ -40,6 +40,51 @@ Array
 
 )
 ```
+
+
+or
+
+
+```php
+$columns = array(
+	'isbn',
+	'title',
+	'author',
+	'publisher',
+	'ctry'
+);
+echo '<h1>cRows (column) Parse books.xls</h1><pre>';
+if ( $xls = SimpleXLS::parse('books.xls') ) {
+	print_r( $xls->cRows($columns) );
+} else {
+	echo SimpleXLS::parseError();
+}
+echo '<pre>';
+
+```
+```
+Array
+(
+    [0] => Array
+        (
+            [isbn] => 618260307
+            [title] => The Hobbit
+            [author] => J. R. R. Tolkien
+            [publisher] => Houghton Mifflin
+            [ctry] => USA
+        )
+
+    [1] => Array
+        (
+            [isbn] => 908606664
+            [title] => Slinky Malinki
+            [author] => Lynley Dodd
+            [publisher] => Mallinson Rendel
+            [ctry] => NZ
+        )
+
+)
+
 ## Installation
 ```
 composer require shuchkin/simplexls
