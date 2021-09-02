@@ -9,6 +9,9 @@ Parse and retrieve data from old Excel .XLS files. MS Excel 97-2003 workbooks PH
 [**Sergey Shuchkin**](https://www.patreon.com/shuchkin) <sergey.shuchkin@gmail.com> 2016-2021<br/>
 
 ## Basic Usage
+
+#### rows()
+
 ```php
 if ( $xls = SimpleXLS::parseFile('book.xls') ) {
 	print_r( $xls->rows() );
@@ -17,6 +20,7 @@ if ( $xls = SimpleXLS::parseFile('book.xls') ) {
 	echo SimpleXLS::parseError();
 }
 ```
+***Result***
 ```
 Array
 (
@@ -41,9 +45,48 @@ Array
 )
 ```
 
+---
 
-or
+#### cRows()
 
+
+```php
+echo '<h1>cRows (column) Parse books.xls</h1><pre>';
+if ( $xls = SimpleXLS::parse('books.xls') ) {
+	print_r( $xls->cRows() );
+} else {
+	echo SimpleXLS::parseError();
+}
+echo '<pre>';
+
+```
+
+***Result***
+```
+Array
+(
+    [0] => Array
+        (
+            [ISBN] => 618260307
+            [title] => The Hobbit
+            [author] => J. R. R. Tolkien
+            [publisher] => Houghton Mifflin
+            [ctry] => USA
+        )
+
+    [1] => Array
+        (
+            [ISBN] => 908606664
+            [title] => Slinky Malinki
+            [author] => Lynley Dodd
+            [publisher] => Mallinson Rendel
+            [ctry] => NZ
+        )
+
+)
+```
+
+OR
 
 ```php
 $columns = array(
@@ -62,6 +105,8 @@ if ( $xls = SimpleXLS::parse('books.xls') ) {
 echo '<pre>';
 
 ```
+
+***Result***
 ```
 Array
 (
@@ -84,9 +129,9 @@ Array
         )
 
 )
+```
 
 ## Installation
-```
 composer require shuchkin/simplexls
 ```
 or download class [here](https://github.com/shuchkin/simplexls/blob/master/src/SimpleXLS.php)

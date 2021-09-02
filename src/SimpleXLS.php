@@ -270,8 +270,19 @@ class SimpleXLS {
 
 		return false;
 	}
-	public function cRows($columns){
+	public function cRows($columns=null){
 		$rows = $this->rows();
+
+		if(!is_array($columns)){
+
+			if(isset($rows[0])){
+				foreach ($rows[0] as $key => $col) {
+					$columns[] = $col;
+				}
+			}
+
+		}
+
 		array_shift($rows);
 
 		$values = array();
