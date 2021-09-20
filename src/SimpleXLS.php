@@ -228,11 +228,11 @@ class SimpleXLS {
 		return self::parse( $data, true, $debug );
 	}
 	public static function parse( $filename, $isData = false, $debug = false ) {
-		$xlsx = new self( $filename, $isData, $debug );
-		if ( $xlsx->success() ) {
-			return $xlsx;
+		$xls = new self( $filename, $isData, $debug );
+		if ( $xls->success() ) {
+			return $xls;
 		}
-		self::parseError( $xlsx->error() );
+		self::parseError( $xls->error() );
 
 		return false;
 	}
@@ -682,7 +682,7 @@ class SimpleXLS {
 
 							}
 						}
-						$retstr = $asciiEncoding ? $retstr : $this->_encodeUTF16( $retstr );
+						$retstr = $asciiEncoding ? $this->_Latin1toDef( $retstr ) : $this->_UTF16toDef( $retstr );
 //                                              echo "Str $i = $retstr\n";
 						if ( $richString ) {
 							$spos += 4 * $formattingRuns;
@@ -722,7 +722,7 @@ class SimpleXLS {
 							$formatString = $this->_substr( $this->data, $pos + 9, $numchars );
 						} else {
 							$formatString = $this->_substr( $this->data, $pos + 9, $numchars * 2 );
-							$formatString = $this->_encodeUTF16( $formatString );
+							$formatString = $this->_UTF16toDef( $formatString );
 						}
 					} else {
 						$numchars     = ord( $this->data[ $pos + 6 ] );
@@ -796,7 +796,7 @@ class SimpleXLS {
 						if ( $chartype === 0 ) {
 							$rec_name = $this->_substr( $this->data, $pos + 12, $rec_length );
 						} else {
-							$rec_name = $this->_encodeUTF16( $this->_substr( $this->data, $pos + 12, $rec_length * 2 ) );
+							$rec_name = $this->_UTF16toDef( $this->_substr( $this->data, $pos + 12, $rec_length * 2 ) );
 						}
 					} elseif ( $version === self::BIFF7 ) {
 						$rec_name = $this->_substr( $this->data, $pos + 11, $rec_length );
@@ -827,10 +827,17 @@ class SimpleXLS {
 		return true;
 
 	}
-
-	protected function _encodeUTF16( $string ) {
+	protected function _Latin1toDef( $string ) {
 		$result = $string;
 		if ( $this->defaultEncoding ) {
+			$result = mb_convert_encoding( $string, $this->defaultEncoding, 'ISO-8859-1' );
+		}
+
+		return $result;
+	}
+	protected function _UTF16toDef( $string ) {
+		$result = $string;
+		if ( $this->defaultEncoding && $this->defaultEncoding !== 'UTF-16LE' ) {
 			$result = mb_convert_encoding( $string, $this->defaultEncoding, 'UTF-16LE' );
 		}
 
