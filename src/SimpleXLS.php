@@ -695,7 +695,7 @@ class SimpleXLS {
 						//if ($retstr == 'Derby'){
 						//      echo "bb\n";
 						//}
-						$this->sst[] = $retstr;
+						$this->sst[] = mb_detect_encoding($retstr, 'ISO-8859-1', true) === 'ISO-8859-1' ? utf8_encode( $retstr ) : $retstr;
 					}
 					/*$continueRecords = array();
 					while ($this->getNextCode() == Type_CONTINUE) {
