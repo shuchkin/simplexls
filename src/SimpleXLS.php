@@ -720,6 +720,7 @@ class SimpleXLS {
 						$numchars = ord( $this->data[ $pos + 6 ] ) | ord( $this->data[ $pos + 7 ] ) << 8;
 						if ( ord( $this->data[ $pos + 8 ] ) === 0 ) { // ascii
 							$formatString = $this->_substr( $this->data, $pos + 9, $numchars );
+							$formatString = $this->_Latin1toDef( $formatString );
 						} else {
 							$formatString = $this->_substr( $this->data, $pos + 9, $numchars * 2 );
 							$formatString = $this->_UTF16toDef( $formatString );
@@ -727,6 +728,7 @@ class SimpleXLS {
 					} else {
 						$numchars     = ord( $this->data[ $pos + 6 ] );
 						$formatString = $this->_substr( $this->data, $pos + 7, $numchars * 2 );
+						$formatString = $this->_Latin1toDef( $formatString );
 					}
 
 					$this->formatRecords[ $indexCode ] = $formatString;
@@ -788,22 +790,27 @@ class SimpleXLS {
 					//echo "Type.BOUNDSHEET\n";
 					$rec_offset = $this->_GetInt4d( $this->data, $pos + 4 );
 //					$rec_typeFlag = ord($this->_data[$pos + 8]);
-//					$rec_visibilityFlag = ord($this->_data[$pos + 9]);
 					$rec_length = ord( $this->data[ $pos + 10 ] );
+					$hidden = false;
 					$rec_name   = '';
 					if ( $version === self::BIFF8 ) {
+						//ord($this->data[$pos + 9])
+						$hidden = ord($this->data[$pos + 8]) === 1;
 						$chartype = ord( $this->data[ $pos + 11 ] );
 						if ( $chartype === 0 ) {
 							$rec_name = $this->_substr( $this->data, $pos + 12, $rec_length );
+							$rec_name = $this->_Latin1toDef( $rec_name );
 						} else {
-							$rec_name = $this->_UTF16toDef( $this->_substr( $this->data, $pos + 12, $rec_length * 2 ) );
+							$rec_name = $this->_substr( $this->data, $pos + 12, $rec_length * 2 );
+							$rec_name = $this->_UTF16toDef( $rec_name );
 						}
 					} elseif ( $version === self::BIFF7 ) {
 						$rec_name = $this->_substr( $this->data, $pos + 11, $rec_length );
 					}
 					$this->boundsheets[] = array(
 						'name'   => $rec_name,
-						'offset' => $rec_offset
+						'offset' => $rec_offset,
+						'hidden' => $hidden
 					);
 
 					break;
