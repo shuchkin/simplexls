@@ -737,7 +737,7 @@ class SimpleXLS {
 				case self::TYPE_XF:
 					$formatstr = '';
 					$indexCode = ord( $this->data[ $pos + 6 ] ) | ord( $this->data[ $pos + 7 ] ) << 8;
-					//echo "\nType.XF ".count($this->formatRecords['xfrecords'])." $indexCode ";
+//					echo "\nType.XF code=".$indexCode." dateFormat=".$this->dateFormats[ $indexCode ]." numberFormats=".$this->numberFormats[ $indexCode ].PHP_EOL;
 					if ( array_key_exists( $indexCode, $this->dateFormats ) ) {
 						//echo "isdate ".$dateFormats[$indexCode];
 						$this->formatRecords['xfrecords'][] = array(
@@ -759,10 +759,11 @@ class SimpleXLS {
 							}
 							//echo '.other.';
 //							echo "\nfl=".strlen( $formatstr)." fs=$formatstr=\n";
-
-							if ( $formatstr && preg_match( '/^[hmsday\/\-: ]+$/i', $formatstr ) ) { // found day and time format
+//							echo "\ncode=".$indexCode." fl=".strlen( $formatstr)." fs=$formatstr=\n";
+							$fs = str_replace('\\','', $formatstr );
+							if ( $fs && preg_match( '/^[hmsday\/\-:\., ]+$/i', $fs ) ) { // found day and time format
 								$isdate    = true;
-								$formatstr = str_replace( array( 'yyyy',':mm','mm','dd', 'h','ss' ), array('Y',':i','m','d', 'H','s' ), $formatstr );
+								$formatstr = str_replace( array( 'yyyy',':mm','mm','dddd','dd', 'h','ss' ), array('Y',':i','m','l','d', 'H','s' ), $fs );
 							}
 						}
 
@@ -773,6 +774,7 @@ class SimpleXLS {
 								'code'   => $indexCode
 							);
 						} else {
+//							echo 'fs='.$formatstr.PHP_EOL;
 							$this->formatRecords['xfrecords'][] = array(
 								'type'   => 'other',
 								'format' => '',
@@ -780,6 +782,7 @@ class SimpleXLS {
 							);
 						}
 					}
+//					echo count( $this->formatRecords['xfrecords'] ).' fs='.$formatstr.' ' . PHP_EOL;
 					//echo "\n";
 					break;
 				case self::TYPE_NINETEENFOUR:
@@ -1117,8 +1120,9 @@ class SimpleXLS {
 	protected function isDate( $spos ) {
 		//$xfindex = GetInt2d(, 4);
 		$xfindex = ord( $this->data[ $spos + 4 ] ) | ord( $this->data[ $spos + 5 ] ) << 8;
-		//echo 'check is date '.$xfindex.' '.$this->formatRecords['xfrecords'][$xfindex]['type']."\n";
-		//var_dump($this->formatRecords['xfrecords'][$xfindex]);
+//      echo 'check is date '.$xfindex.' '.$this->formatRecords['xfrecords'][$xfindex]['type']."\n";
+
+
 		if ( $this->formatRecords['xfrecords'][ $xfindex ]['type'] === 'date' ) {
 			$this->curFormat = $this->formatRecords['xfrecords'][ $xfindex ]['format'];
 			$this->recType   = 'date';
