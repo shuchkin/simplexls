@@ -1,4 +1,4 @@
-# SimpleXLS class 0.9.14
+# SimpleXLS class 0.9.15
 [<img src="https://img.shields.io/packagist/dt/shuchkin/simplexls" />](https://packagist.org/packages/shuchkin/simplexls)
 
 Parse and retrieve data from old Excel .XLS files. MS Excel 97-2003 workbooks PHP reader. PHP BIFF reader. No additional extensions needed (internal olereader).
@@ -46,7 +46,87 @@ composer require shuchkin/simplexls
 ```
 or download class [here](https://github.com/shuchkin/simplexls/blob/master/src/SimpleXLS.php)
 
-### Debug
+## Examples
+### XLS to html table
+```php
+echo SimpleXLS::parse('book.xls')->toHTML();
+```
+or
+```php
+if ( $xls = SimpleXLS::parse('book.xls') ) {
+	echo '<table border="1" cellpadding="3" style="border-collapse: collapse">';
+	foreach( $xls->rows() as $r ) {
+		echo '<tr><td>'.implode('</td><td>', $r ).'</td></tr>';
+	}
+	echo '</table>';
+} else {
+	echo SimpleXLS::parseError();
+}
+```
+### Sheet names
+```php
+if ( $xls = SimpleXLS::parseFile('book.xls') ) {
+  print_r( $xls->sheetNames() );
+  print_r( $xls->sheetName( $xls->activeSheet ) );
+}
+```
+```
+Array
+(
+    [0] => Sheet 1
+    [1] => Sheet 2
+    [2] => Sheet 3
+)
+Sheet 2
+```
+### Sheets info
+```php
+if ( $xls = SimpleXLS::parseFile('book.xls') ) {
+  print_r( $xls->boundsheets ); 
+}
+```
+```
+Array
+(
+    [0] => Array
+        (
+            [name] => Sheet 1
+            [offset] => 15870
+            [hidden] => 
+            [active] => 
+        )
+
+    [1] => Array
+        (
+            [name] => Sheet 2
+            [offset] => 16308
+            [hidden] => 1
+            [active] => 1
+        )
+
+    [2] => Array
+        (
+            [name] => Sheet 3 
+            [offset] => 16746
+            [hidden] => 
+            [active] => 
+        )
+)
+```
+
+### Classic OOP style 
+```php
+$xls = new SimpleXLS('books.xls');
+if ($xls->success()) {
+	print_r( $xls->rows() );
+} else {
+	echo 'xls error: '.$xls->error();
+}
+```
+
+
+
+## Debug
 ```php
 ini_set('error_reporting', E_ALL );
 ini_set('display_errors', 1 );
@@ -58,54 +138,15 @@ print_r( $xls->rows() );
 print_r( $xls->sheets );
 
 ```
-### Classic OOP style 
-```php
-$xls = new SimpleXLS('books.xls');
-if ($xls->success()) {
-	print_r( $xls->rows() );
-} else {
-	echo 'xls error: '.$xls->error();
-}
-```
-### Rows with header values as keys
-```php
-if ( $xls = SimpleXLS::parse('books.xls')) {
-	// Produce array keys from the array values of 1st array element
-	$header_values = $rows = array();
-	foreach ( $xls->rows() as $k => $r ) {
-		if ( $k === 0 ) {
-			$header_values = $r;
-			continue;
-		}
-		$rows[] = array_combine( $header_values, $r );
-	}
-	print_r( $rows );
-}
-```
-```
-Array
-(
-    [0] => Array
-        (
-            [ISBN] => 618260307
-            [title] => The Hobbit
-            [author] => J. R. R. Tolkien
-            [publisher] => Houghton Mifflin
-            [ctry] => USA
-        )
-    [1] => Array
-        (
-            [ISBN] => 908606664
-            [title] => Slinky Malinki
-            [author] => Lynley Dodd
-            [publisher] => Mallinson Rendel
-            [ctry] => NZ
-        )
-)
-```
+
+
 	
 ## History
 ```
+0.9.15 (2021-12-01)
+  added $xls->sheetNames(), $xls->sheetName( $index ), $xls->activeSheet
+  added $limit in $xls->rows( $sheetIndex, $limit = 0 )
+  more examples in README
 0.9.14 (2021-11-04) Detect datetime format 
 0.9.13 (2021-09-21) Fixed éàù... in sheet names, added flag *hidden* in $xls->boundsheets info
 0.9.12 (2021-09-20) Fixed éàù...
