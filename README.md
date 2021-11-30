@@ -133,7 +133,7 @@ ini_set('display_errors', 1 );
 
 //header('Content-Type: text/html; charset=utf-8');
 
-$xls = SimpleXLSX::parse('books.xlsx', false, true );
+$xls = SimpleXLSX::parse('books.xls', false, true );
 print_r( $xls->rows() );
 print_r( $xls->sheets );
 
