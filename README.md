@@ -1,4 +1,4 @@
-# SimpleXLS class 0.9.15
+# SimpleXLS class 0.10.1
 [<img src="https://img.shields.io/packagist/dt/shuchkin/simplexls" />](https://packagist.org/packages/shuchkin/simplexls)
 
 Parse and retrieve data from old Excel .XLS files. MS Excel 97-2003 workbooks PHP reader. PHP BIFF reader. No additional extensions needed (internal olereader).
@@ -6,7 +6,7 @@ Parse and retrieve data from old Excel .XLS files. MS Excel 97-2003 workbooks PH
 
 *Hey, bro, please ★ the package for my motivation :) and [donate](https://opencollective.com/simplexlsx) for more motivation!*
 
-[**Sergey Shuchkin**](https://www.patreon.com/shuchkin) <sergey.shuchkin@gmail.com> 2016-2021<br/>
+[**Sergey Shuchkin**](https://www.patreon.com/shuchkin) <sergey.shuchkin@gmail.com> 2016-2022<br/>
 
 ## Basic Usage
 ```php
@@ -45,6 +45,9 @@ Array
 composer require shuchkin/simplexls
 ```
 or download class [here](https://github.com/shuchkin/simplexls/blob/master/src/SimpleXLS.php)
+
+From 0.10 version supports PHP 7.1+, PHP 8+  
+[0.9.x](https://github.com/shuchkin/simplexls/tags) supports PHP 5.3+
 
 ## Examples
 ### XLS to html table
@@ -143,6 +146,8 @@ print_r( $xls->sheets );
 	
 ## History
 ```
+0.10.1 (2022-04-04)
+  PHP 7.1+, PHP 8.0+
 0.9.15 (2021-12-01)
   added $xls->sheetNames(), $xls->sheetName( $index ), $xls->activeSheet
   added $limit in $xls->rows( $sheetIndex, $limit = 0 )
