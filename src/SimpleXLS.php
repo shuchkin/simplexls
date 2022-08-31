@@ -1196,7 +1196,8 @@ class SimpleXLS
     {
         //$xfindex = GetInt2d(, 4);
         $xfindex = ord($this->data[ $spos + 4 ]) | ord($this->data[ $spos + 5 ]) << 8;
-//      echo 'check is date '.$xfindex.' '.$this->formatRecords['xfrecords'][$xfindex]['type']."\n";
+//      echo 'check is date '.$xfindex.' '.$this->formatRecords['xfrecords'][$xfindex]['type']." ".$this->formatRecords['xfrecords'][ $xfindex ]['format']."\n";
+
 
 
         if ($this->formatRecords['xfrecords'][ $xfindex ]['type'] === 'date') {
@@ -1207,7 +1208,7 @@ class SimpleXLS
 
         if ($this->formatRecords['xfrecords'][ $xfindex ]['type'] === 'number') {
             $this->curFormat = $this->formatRecords['xfrecords'][ $xfindex ]['format'];
-            if (( $xfindex === 0x9 ) || ( $xfindex === 0xa )) {
+            if (strpos($this->curFormat, '%%') !== false) {
                 $this->multiplier = 100;
             }
         } else {
