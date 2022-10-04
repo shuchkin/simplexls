@@ -1,4 +1,4 @@
-# SimpleXLS class 0.10.2
+# SimpleXLS class 0.10.3
 [<img src="https://img.shields.io/packagist/dt/shuchkin/simplexls" />](https://packagist.org/packages/shuchkin/simplexls)
 
 Parse and retrieve data from old Excel .XLS files. MS Excel 97-2003 workbooks PHP reader. PHP BIFF reader. No additional extensions needed (internal olereader).
@@ -146,6 +146,7 @@ print_r( $xls->sheets );
 	
 ## History
 ```
+0.10.3 (2022-10-04) namespaced examples
 0.10.2 (2022-09-01) fixed percent values
 0.10.1 (2022-04-04)
   PHP 7.1+, PHP 8.0+
