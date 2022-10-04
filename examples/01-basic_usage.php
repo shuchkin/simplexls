@@ -1,7 +1,7 @@
 <?php /** @noinspection ForgottenDebugOutputInspection */
 require_once __DIR__ . '/../src/SimpleXLS.php';
 
-use \Shuchkin\SimpleXLS;
+use Shuchkin\SimpleXLS;
 
 echo '<h1>Parse books.xsl</h1><pre>';
 if ($xls = SimpleXLS::parse('books.xls')) {

@@ -4,7 +4,7 @@ ini_set('display_errors', true);
 
 require_once __DIR__.'/../src/SimpleXLS.php';
 
-use \Shuchkin\SimpleXLS;
+use Shuchkin\SimpleXLS;
 
 echo '<h1>Rows with header values as keys</h1>';
 if ($xls = SimpleXLS::parse('books.xls')) {
