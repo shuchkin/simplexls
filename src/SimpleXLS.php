@@ -1001,7 +1001,7 @@ class SimpleXLS
                     //echo $numValue." ";
                     $t_alias = 'n';
                     if ($this->isDate($spos)) {
-                        [$string, $raw] = $this->createDate($numValue);
+                        [$string, $raw] = $this->createDate((int) $numValue);
                         $t_alias = 'd';
                     } else {
                         $raw = $numValue;
@@ -1033,7 +1033,7 @@ class SimpleXLS
                     for ($i = 0; $i < $columns; $i ++) {
                         $numValue = $this->_getIEEE754($this->_getInt4d($tmppos + 2));
                         if ($this->isDate($tmppos - 4)) {
-                            [$string, $raw] = $this->createDate($numValue);
+                            [$string, $raw] = $this->createDate((int) $numValue);
                             $t_alias = 'd';
                         } else {
                             $raw = $numValue;
@@ -1058,7 +1058,7 @@ class SimpleXLS
                     $tmp    = unpack('ddouble', substr($this->data, $spos + 6, 8)); // It machine machine dependent
                     $t_alias = 'n';
                     if ($this->isDate($spos)) {
-                        [$string, $raw] = $this->createDate($tmp['double']);
+                        [$string, $raw] = $this->createDate((int) $tmp['double']);
                         $t_alias = 'd';
                         //   $this->addcell(DateRecord($r, 1));
                     } else {
@@ -1097,7 +1097,7 @@ class SimpleXLS
                         // result is a number, so first 14 bytes are just like a _NUMBER record
                         $tmp = unpack('ddouble', substr($this->data, $spos + 6, 8)); // It machine machine dependent
                         if ($this->isDate($spos)) {
-                            [$string, $raw] = $this->createDate($tmp['double']);
+                            [$string, $raw] = $this->createDate((int) $tmp['double']);
                             //   $this->addcell(DateRecord($r, 1));
                         } else {
                             //$raw = $tmp[''];
