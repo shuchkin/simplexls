@@ -167,5 +167,5 @@ print_r( $xls->sheets );
 0.9.5 (2020-01-16) Fixed negative number values and datetime values
 0.9.4 (2019-03-14) Added git Tag for prevent composer warning 
 0.9.3 (2019-02-19) Fixed datetime detection
-0.9.2 (2018-11-15) GitHub realese, composer
+0.9.2 (2018-11-15) GitHub release, composer
 ```
