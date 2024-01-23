@@ -216,6 +216,7 @@ class SimpleXLS
      * Constructor
      *
      * @param string $filename XLS Filename or xls contents
+     * @param string $dateTimeFormat How date cells will be output
      * @param bool $isData If True then $filename is contents
      * @param bool $debug Trigger PHP errors?
      */
