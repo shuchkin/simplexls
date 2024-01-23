@@ -219,8 +219,9 @@ class SimpleXLS
      * @param bool $isData If True then $filename is contents
      * @param bool $debug Trigger PHP errors?
      */
-    public function __construct(string $filename, bool $isData = false, bool $debug = false)
+    public function __construct(string $filename, string $dateTimeFormat = 'Y-m-d H:i:s', bool $isData = false, bool $debug = false)
     {
+	$this->dataTimeFormat = $dateTimeFormat;
         $this->debug = $debug;
         $this->_oleread($filename, $isData);
         $this->_parse();
