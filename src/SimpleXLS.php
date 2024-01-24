@@ -222,7 +222,7 @@ class SimpleXLS
      */
     public function __construct(string $filename, string $dateTimeFormat = 'Y-m-d H:i:s', bool $isData = false, bool $debug = false)
     {
-	$this->dataTimeFormat = $dateTimeFormat;
+	$this->datetimeFormat = $dateTimeFormat;
         $this->debug = $debug;
         $this->_oleread($filename, $isData);
         $this->_parse();
