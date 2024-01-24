@@ -3,7 +3,7 @@ require_once __DIR__ . '/../src/SimpleXLS.php';
 
 use Shuchkin\SimpleXLS;
 
-echo '<h1>Parse books.xsl</h1><pre>';
+echo '<h1>Parse books.xls</h1><pre>';
 if ($xls = SimpleXLS::parse('books.xls')) {
     print_r($xls->rows());
 } else {
