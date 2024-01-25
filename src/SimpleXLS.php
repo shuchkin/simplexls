@@ -222,7 +222,7 @@ class SimpleXLS
      */
     public function __construct(string $filename, string $dateTimeFormat = 'Y-m-d H:i:s', bool $isData = false, bool $debug = false)
     {
-	$this->datetimeFormat = $dateTimeFormat;
+	    $this->datetimeFormat = $dateTimeFormat;
         $this->debug = $debug;
         $this->_oleread($filename, $isData);
         $this->_parse();
@@ -236,9 +236,9 @@ class SimpleXLS
     {
         return self::parse($data, true, $debug);
     }
-    public static function parse($filename, $isData = false, $debug = false)
+    public static function parse($filename, string $dateTimeFormat = 'Y-m-d H:i:s', $isData = false, $debug = false)
     {
-        $xls = new self($filename, $isData, $debug);
+        $xls = new self($filename, $dateTimeFormat, $isData, $debug);
         if ($xls->success()) {
             return $xls;
         }
