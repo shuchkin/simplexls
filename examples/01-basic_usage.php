@@ -1,10 +1,11 @@
-<?php /** @noinspection ForgottenDebugOutputInspection */
+<?php 
 require_once __DIR__ . '/../src/SimpleXLS.php';
 
 use Shuchkin\SimpleXLS;
 
 echo '<h1>Parse books.xls</h1><pre>';
-if ($xls = SimpleXLS::parse('books.xls')) {
+$xls = new SimpleXLS('books.xls', 'm-d-Y');
+if ($xls->parse('books.xls',)) {
     print_r($xls->rows());
 } else {
     echo SimpleXLS::parseError();
