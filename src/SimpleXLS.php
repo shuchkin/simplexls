@@ -264,27 +264,33 @@ class SimpleXLS
     {
         return ! $this->error;
     }
-    public function rows($sheetNum = 0, $limit = 0)
+    public function rows($worksheetIndex = 0, $limit = 0)
+    {
+        return iterator_to_array($this->readRows($worksheetIndex, $limit), false);
+    }
+    /**
+     * @param $sheetNum
+     * @param $limit
+     * @return \Generator
+    */
+    public function readRows($sheetNum = 0, $limit = 0)
     {
         if ($this->sheets[ $sheetNum ]) {
             $s      = $this->sheets[ $sheetNum ];
-            $result = array();
             for ($i = 0; $i < $s['numRows']; $i ++) {
                 $r = array();
                 for ($j = 0; $j < $s['numCols']; $j ++) {
                     $r[ $j ] = $s['cells'][$i][$j] ?? '';
                 }
-                $result[] = $r;
+                yield $r;
                 $limit--;
                 if ($limit === 0) {
                     break;
                 }
             }
-
-            return $result;
         }
 
-        return false;
+        return;
     }
     public function rowsEx($sheetNum = 0, $limit = 0): array
     {
