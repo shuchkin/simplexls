@@ -1132,7 +1132,7 @@ class SimpleXLS
                     break;
                 case self::TYPE_LABEL:
                     $row    = $this->_getInt2d($spos);
-                    $column = $this->_getInt2d($spos);
+                    $column = $this->_getInt2d($spos + 2);
                     $string = substr($this->data, $spos + 8, ord($this->data[ $spos + 6 ]) | ord($this->data[ $spos + 7 ]) << 8);
                     $this->addCell($row, $column, $string, '', $t_code, 'inlineStr');
 
