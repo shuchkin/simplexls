@@ -6,7 +6,7 @@ Parse and retrieve data from old Excel .XLS files. MS Excel 97-2003 workbooks PH
 
 *Hey, bro, please ★ the package for my motivation :) and [donate](https://opencollective.com/simplexlsx) for more motivation!*
 
-[**Sergey Shuchkin**](https://www.patreon.com/shuchkin) <sergey.shuchkin@gmail.com> 2016-2024<br/>
+[**Sergey Shuchkin**](https://www.patreon.com/shuchkin) <sergey.shuchkin@gmail.com> 2016-2025<br/>
 
 ## Basic Usage
 ```php
