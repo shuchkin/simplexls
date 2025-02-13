@@ -46,8 +46,7 @@ composer require shuchkin/simplexls
 ```
 or download class [here](https://github.com/shuchkin/simplexls/blob/master/src/SimpleXLS.php)
 
-From 0.10 version supports PHP 7.1+, PHP 8+  
-[0.9.x](https://github.com/shuchkin/simplexls/tags) supports PHP 5.3+
+PHP 5.5-8.4 
 
 ## Basic methods
 ```php
