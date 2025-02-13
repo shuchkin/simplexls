@@ -8,7 +8,7 @@
     {
       "name": "Sergey Shuchkin (SMSPILOT)",
       "email": "sergey.shuchkin@gmail.com",
-      "homepage": "http://www.shuchkin.ru/"
+      "homepage": "https://shuchkin.ru"
     }
   ],
   "autoload": {
@@ -17,6 +17,7 @@
     ]
   },
   "require": {
+    "php": ">=5.5",
     "ext-mbstring": "*"
   }
 }

@@ -1,4 +1,4 @@
-# SimpleXLS class 0.10.5
+# SimpleXLS class 0.11.1
 [<img src="https://img.shields.io/packagist/dt/shuchkin/simplexls" />](https://packagist.org/packages/shuchkin/simplexls)
 
 Parse and retrieve data from old Excel .XLS files. MS Excel 97-2003 workbooks PHP reader. PHP BIFF reader. No additional extensions needed (internal olereader).
@@ -160,7 +160,7 @@ print_r( $xls->sheets );
 
 	
 ## History
-
+0.11.1 (2025-02-14) PHP 5.5-8.4 support, fixed datetime cells thx [tomu4](https://github.com/tomu4)<br>
 0.10.5 (2024-09-17) readRows() returns Generator, thx [livingroot](https://github.com/livingroot)<br>
 0.10.4 (2023-11-13) more compatible with PHP 8.1<br>
 0.10.3 (2022-10-04) namespaced examples<br>
