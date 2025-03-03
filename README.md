@@ -159,6 +159,7 @@ print_r( $xls->sheets );
 
 	
 ## History
+1.0.0 (2025-03-04) 7 years, 400k downloads, we need release<br>
 0.11.1 (2025-02-14) PHP 5.5-8.4 support, fixed datetime cells thx [tomu4](https://github.com/tomu4)<br>
 0.10.5 (2024-09-17) readRows() returns Generator, thx [livingroot](https://github.com/livingroot)<br>
 0.10.4 (2023-11-13) more compatible with PHP 8.1<br>
