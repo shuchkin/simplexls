@@ -82,6 +82,12 @@ class SimpleXLS
     const TYPE_NINETEENFOUR = 0x22;
     const TYPE_MERGEDCELLS = 0xE5;
     const TYPE_WINDOW1 = 0x3D;
+    const TYPE_CODEPAGE = 0x42;
+    const CODEPAGE_UTF8 = 0xFDE9; // 65001
+    const CODEPAGE_1200 = 0x04B0; // Unicode, UTF-16LE
+    const CODEPAGE_1251 = 0x04E3;
+    const CODEPAGE_1252 = 0x04E4;
+    const CODEPAGE_MAC = 0x2710; // 1000
 
     //const DEF_NUM_FORMAT = "%.2f";
     const DEF_NUM_FORMAT = '%s';
@@ -230,8 +236,10 @@ class SimpleXLS
     public $wrkbook; // false - to use excel format
     public $error = false;
     public $debug;
+    public $codepage;
 
     // {{{ Spreadsheet_Excel_Reader()
+
 
     /**
      * Constructor
@@ -670,6 +678,7 @@ class SimpleXLS
         if (( $version !== self::BIFF8 ) &&
              ( $version !== self::BIFF7 )
         ) {
+            $this->error('BIFF8 version and BIFF7 version supported only');
             return false;
         }
 
@@ -809,6 +818,7 @@ class SimpleXLS
                     break;
 
                 case self::TYPE_FILEPASS:
+                    $this->error('Workbook is password protected');
                     return false;
                 case self::TYPE_NAME:
                     //echo "Type_NAME\n";
@@ -928,6 +938,10 @@ class SimpleXLS
                 case self::TYPE_WINDOW1:
                     $this->activeSheet = $this->getInt2d($pos + 14);
                     break;
+                case self::TYPE_CODEPAGE:
+                    $this->codepage = $this->getInt2d($pos + 4);
+//                    echo "CP=$this->codepage\r\n\r\n";
+                    break;
             }
 
             //echo "Code = ".base_convert($r['code'],10,16)."\n";
@@ -976,8 +990,10 @@ class SimpleXLS
         list($length, $version, $substreamType) = $this->parseSubstreamHeader($spos);
 
         if (( $version !== self::BIFF8 ) && ( $version !== self::BIFF7 )) {
+            $this->error('BIFF8 version and BIFF7 version supported only');
             return false;
         }
+//        echo ($version === self::BIFF7 ? "BIFF7" : "BIFF8") . "\r\n";
 
         if ($substreamType !== self::WORKSHEET) {
             return false;
@@ -1064,6 +1080,43 @@ class SimpleXLS
                     }
                     $this->addCell($row, $column, $string, $raw, $t_code, $t_alias);
                     //echo "Type_RK $row $column $string $raw {$this->curformat}\n";
+                    break;
+                case self::TYPE_LABEL:
+                    $row    = $this->getInt2d($spos);
+                    $column = $this->getInt2d($spos + 2);
+                    $len    = $this->getInt2d($spos + 6);
+//                    echo "len=$len\r\n";
+                    if ($this->codepage === self::CODEPAGE_1200) { // BIFF8 Unicode
+                        // XLUnicodeString: len == cch (2), flags (1, bit 0 = fHighByte), then the characters
+                        $grbit = ord($this->data[$spos + 8]);
+//                        echo "grbit=$grbit\r\n";
+                        $string = ($grbit && 0x01)
+                            ? $this->UTF16toDef(substr($this->data, $spos + 9, $len * 2))
+                            : $this->latin1toDef(substr($this->data, $spos + 9, $len));
+                    } else {
+                        $string = substr($this->data, $spos + 8, $len);
+                        switch ($this->codepage) {
+                            case self::CODEPAGE_UTF8:
+//                                echo "utf8\r\n";
+                                $string = mb_convert_encoding($string, $this->defaultEncoding, 'UTF-8');
+                                break;
+                            case self::CODEPAGE_1251:
+//                               echo "win1251\r\n";
+                                $string = mb_convert_encoding($string, $this->defaultEncoding, 'Windows-1251');
+                                break;
+                            case self::CODEPAGE_1252:
+//                                echo "win1252\r\n";
+                                $string = mb_convert_encoding($string, $this->defaultEncoding, 'Windows-1252');
+                                break;
+                            case self::CODEPAGE_MAC:
+//                                echo "mac\r\n";
+                                $string = mb_convert_encoding($string, $this->defaultEncoding, 'MacRoman');
+                                break;
+                        }
+                    }
+                    $this->addCell($row, $column, $string, '', $t_code, 'inlineStr');
+
+                    // $this->addcell(LabelRecord($r));
                     break;
                 case self::TYPE_LABELSST:
                     $row    = ord($this->data[ $spos ]) | ord($this->data[ $spos + 1 ]) << 8;
@@ -1178,18 +1231,7 @@ class SimpleXLS
                 case self::TYPE_DBCELL:
                 case self::TYPE_MULBLANK:
                     break;
-                case self::TYPE_LABEL:
-                    $row    = $this->getInt2d($spos);
-                    $column = $this->getInt2d($spos + 2);
-                    $string = substr(
-                        $this->data,
-                        $spos + 8,
-                        ord($this->data[ $spos + 6 ]) | ord($this->data[ $spos + 7 ]) << 8
-                    );
-                    $this->addCell($row, $column, $string, '', $t_code, 'inlineStr');
 
-                    // $this->addcell(LabelRecord($r));
-                    break;
 
                 case self::TYPE_EOF:
                     $cont = false;
